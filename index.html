@@ -75,10 +75,10 @@
         </div>
         <div>
           <h2 class="text-sm font-bold text-white flex items-center gap-1">
-            <span id="user-display-name">Guest User</span>
+            <span id="user-display-name">Loading...</span>
             <span id="banned-badge" class="hidden text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30">Banned</span>
           </h2>
-          <p class="text-[11px] text-gray-400" id="user-tg-id">ID: Not Connected</p>
+          <p class="text-[11px] text-gray-400" id="user-tg-id">ID: Connecting...</p>
         </div>
       </div>
       <button onclick="switchTab('notifications-tab')" class="relative w-10 h-10 rounded-xl glass-card flex items-center justify-center text-gray-300 hover:text-white transition">
@@ -499,7 +499,7 @@
           .from('profiles')
           .select('*')
           .eq('telegram_id', userId)
-          .single();
+          .maybeSingle();
 
         if (!profile) {
           let referrerId = null;
@@ -526,10 +526,31 @@
 
     async function appMainSync() {
       try {
-        const { data: user } = await _supabase.from('profiles').select('*').eq('telegram_id', CURRENT_USER_ID).single();
-        const { data: settings } = await _supabase.from('settings').select('*').eq('id', 'global_config').single();
+        const { data: user } = await _supabase.from('profiles').select('*').eq('telegram_id', CURRENT_USER_ID).maybeSingle();
+        let { data: settings } = await _supabase.from('settings').select('*').eq('id', 'global_config').maybeSingle();
 
-        if (!user || !settings) return;
+        if (!settings) {
+          settings = {
+            maintenance_mode: false,
+            announcement: "Welcome to TaskHub!",
+            min_withdraw: 100,
+            max_withdraw: 10000,
+            withdraw_fee: 5,
+            daily_withdraw_limit: 1,
+            referral_l1: 5,
+            referral_l2: 5,
+            referral_l3: 2,
+            wheel_probabilities: {
+              "0.00": 40, "0.50": 25, "1.00": 15, "1.50": 10, "2.00": 6, "3.00": 3.2, "5.00": 0.7, "20.00": 0.1, "50.00": 0
+            }
+          };
+        }
+
+        if (!user) {
+          document.getElementById('user-display-name').textContent = "Connecting...";
+          document.getElementById('user-tg-id').textContent = `ID: ${CURRENT_USER_ID}`;
+          return;
+        }
 
         // Maintenance Overlay
         const maintScreen = document.getElementById('maintenance-screen');
