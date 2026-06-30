@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TaskHub BDT - Earn, Complete, Grow</title>
+  <title>TaskHub - Earn BDT</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
@@ -14,23 +14,19 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body {
-      background-color: #050811;
+      background-color: #0b0f19;
       color: #f3f4f6;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-    .premium-gradient-card {
-      background: linear-gradient(135deg, #111827 0%, #0d1220 50%, #080c18 100%);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
     .glass-card {
-      background: rgba(17, 24, 39, 0.7);
+      background: rgba(30, 41, 59, 0.7);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .glass-nav {
-      background: rgba(8, 12, 24, 0.95);
-      backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
     .no-scrollbar::-webkit-scrollbar {
       display: none;
@@ -43,11 +39,11 @@
 </head>
 <body class="min-h-screen pb-24 no-scrollbar">
 
-  <!-- Loading Screen -->
-  <div id="loading-screen" class="fixed inset-0 z-50 bg-[#090d16] flex items-center justify-center p-6">
+  <!-- Loading Overlay -->
+  <div id="loading-screen" class="fixed inset-0 z-50 bg-[#0b0f19] flex items-center justify-center p-6">
     <div class="text-center space-y-3">
       <div class="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-      <p class="text-xs text-gray-400">Synchronizing Live Database...</p>
+      <p class="text-xs text-gray-400">Loading TaskHub Secure Database...</p>
     </div>
   </div>
 
@@ -63,7 +59,7 @@
   </div>
 
   <!-- Announcement Bar -->
-  <div id="announcement-banner" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-2 px-4 text-xs font-semibold text-center flex items-center justify-between hidden">
+  <div id="announcement-banner" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-4 text-xs font-semibold text-center flex items-center justify-between hidden">
     <span class="flex-1 text-center" id="announcement-text">Welcome to TaskHub! Complete tasks to earn BDT.</span>
     <button onclick="document.getElementById('announcement-banner').style.display='none'" class="text-white hover:opacity-80"><i class="fa-solid fa-xmark"></i></button>
   </div>
@@ -72,45 +68,45 @@
   <main class="max-w-md mx-auto px-4 pt-4">
 
     <!-- Top Profile Header -->
-    <div class="flex items-center justify-between mb-5">
+    <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center font-bold text-white shadow-md shadow-purple-500/10" id="user-avatar-container">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-md overflow-hidden" id="user-avatar-container">
           <img id="user-avatar-img" class="w-full h-full rounded-full object-cover hidden" alt="avatar">
           <span id="user-avatar-initials" class="text-sm">TH</span>
         </div>
         <div>
           <h2 class="text-xs font-extrabold text-white flex items-center gap-1">
-            <span id="user-display-name">Loading...</span>
-            <span id="banned-badge" class="hidden text-[9px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded border border-red-500/30">Banned</span>
+            <span id="user-display-name">Connecting...</span>
+            <span id="banned-badge" class="hidden text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30">Banned</span>
           </h2>
-          <p class="text-[10px] text-gray-400" id="user-tg-id">ID: Connecting</p>
+          <p class="text-[11px] text-gray-400" id="user-tg-id">ID: Connecting</p>
         </div>
       </div>
-      <button onclick="switchTab('notifications-tab')" class="relative w-9 h-9 rounded-xl glass-card flex items-center justify-center text-gray-300 hover:text-white transition">
-        <i class="fa-regular fa-bell text-sm"></i>
-        <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-purple-500 rounded-full hidden" id="notification-dot"></span>
+      <button onclick="switchTab('notifications-tab')" class="relative w-10 h-10 rounded-xl glass-card flex items-center justify-center text-gray-300 hover:text-white transition">
+        <i class="fa-regular fa-bell"></i>
+        <span class="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full hidden" id="notification-dot"></span>
       </button>
     </div>
 
-    <!-- Active Screen Area -->
+    <!-- Screen Tabs Content -->
     <div id="tab-content-area">
 
       <!-- DASHBOARD TAB -->
       <section id="dashboard-tab" class="tab-screen space-y-4">
         <!-- Balance Premium Card -->
-        <div class="premium-card rounded-2xl p-5 relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+        <div class="glass-card rounded-2xl p-5 relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
           <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl"></div>
           <div class="absolute -left-10 -top-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
           
           <div class="flex justify-between items-start mb-4">
             <div>
-              <p class="text-[10px] text-gray-400 tracking-wider font-semibold uppercase">Wallet Balance</p>
-              <h1 class="text-2xl font-black text-white mt-1 flex items-baseline gap-1">
-                ৳ <span id="balance-val" class="text-3xl ml-1">0.00</span>
+              <p class="text-xs text-gray-400 tracking-wider font-semibold uppercase">Wallet Balance</p>
+              <h1 class="text-3xl font-black text-white mt-1 flex items-baseline gap-1">
+                ৳ <span id="balance-val">0.00</span>
               </h1>
             </div>
-            <button onclick="switchTab('withdraw-tab')" class="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-lg shadow-purple-500/20 flex items-center gap-1.5">
-              <i class="fa-solid fa-wallet text-[11px]"></i> Withdraw
+            <button onclick="switchTab('withdraw-tab')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-1.5">
+              <i class="fa-solid fa-wallet"></i> Withdraw
             </button>
           </div>
 
@@ -121,12 +117,12 @@
             </div>
             <div>
               <span class="text-gray-400 block mb-0.5">Lifetime Earned</span>
-              <span class="font-bold text-emerald-500 text-sm" id="total-earned-val">৳ 0.00</span>
+              <span class="font-bold text-green-500 text-sm" id="total-earned-val">৳ 0.00</span>
             </div>
           </div>
         </div>
 
-        <!-- Stats Grid (4 Columns) -->
+        <!-- Quick Stats Grid (4 Columns) -->
         <div class="grid grid-cols-4 gap-2 text-center">
           <div class="glass-card rounded-xl p-2.5">
             <span class="text-[9px] text-gray-400 block mb-1">Pending</span>
@@ -188,7 +184,7 @@
             </div>
             <canvas id="wheel-canvas" width="240" height="240" class="rounded-full shadow-2xl transition-transform duration-4000 ease-out"></canvas>
             <div class="absolute w-8 h-8 bg-slate-900 border-4 border-slate-700 rounded-full z-10 shadow-lg flex items-center justify-center">
-              <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <div class="w-2.5 h-2.5 bg-purple-500 rounded-full"></div>
             </div>
           </div>
 
@@ -206,7 +202,7 @@
       <section id="refer-tab" class="tab-screen space-y-4 hidden">
         <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
           <h2 class="text-base font-bold text-white mb-2">Refer & Earn System</h2>
-          <p class="text-xs text-gray-400 leading-relaxed mb-4">Earn continuous commissions whenever your referred friends complete tasks!</p>
+          <p class="text-xs text-gray-400 leading-relaxed mb-4">Earn commissions when your referred friends complete tasks!</p>
           
           <div class="grid grid-cols-3 gap-2 text-center mb-6">
             <div class="bg-white/5 border border-white/5 rounded-xl p-2.5">
@@ -223,6 +219,7 @@
             </div>
           </div>
 
+          <!-- Referral Copy -->
           <div class="space-y-2 mb-4">
             <label class="text-xs text-gray-300 font-semibold block">Your Invitation Link</label>
             <div class="flex gap-2">
@@ -234,7 +231,7 @@
           </div>
         </div>
 
-        <!-- Referral Stats Grid -->
+        <!-- Referral Stats -->
         <div class="glass-card rounded-2xl p-6">
           <h3 class="text-xs font-bold text-white mb-4 uppercase tracking-wider">Referral Stats</h3>
           <div class="space-y-3 text-xs">
@@ -262,7 +259,7 @@
       <section id="withdraw-tab" class="tab-screen space-y-4 hidden">
         <div class="glass-card rounded-2xl p-6">
           <h2 class="text-base font-bold text-white mb-1">Request Withdrawal</h2>
-          <p class="text-xs text-gray-400 mb-6">Withdraw your BDT instantly to Mobile Financial Services (bKash/Nagad).</p>
+          <p class="text-xs text-gray-400 mb-6">Withdraw your earned BDT directly to bKash/Nagad.</p>
 
           <form id="withdraw-form" onsubmit="handleWithdrawSubmit(event)" class="space-y-4">
             <div>
@@ -543,35 +540,61 @@
       }
     }
 
+    // Isolated Async UI Synchronization (Fully error-tolerant / Fail-safe)
     async function appMainSync() {
+      let user = null;
+      let settings = null;
+
+      // 1. Safe Load User Profile
       try {
-        const { data: user } = await _supabase.from('profiles').select('*').eq('telegram_id', CURRENT_USER_ID).maybeSingle();
-        let { data: settings } = await _supabase.from('settings').select('*').eq('id', 'global_config').maybeSingle();
+        const { data, error } = await _supabase.from('profiles').select('*').eq('telegram_id', CURRENT_USER_ID).maybeSingle();
+        if (error) console.error("Profile load issue:", error);
+        user = data;
+      } catch (e) {
+        console.error("Profile query crashed:", e);
+      }
 
-        if (!settings) {
-          settings = {
-            maintenance_mode: false,
-            announcement: "Welcome to TaskHub!",
-            min_withdraw: 100,
-            max_withdraw: 10000,
-            withdraw_fee: 5,
-            daily_withdraw_limit: 1,
-            referral_l1: 5,
-            referral_l2: 5,
-            referral_l3: 2,
-            wheel_probabilities: {
-              "0.00": 40, "0.50": 25, "1.00": 15, "1.50": 10, "2.00": 6, "3.00": 3.2, "5.00": 0.7, "20.00": 0.1, "50.00": 0
-            }
-          };
+      // 2. Safe Load Settings
+      try {
+        const { data, error } = await _supabase.from('settings').select('*').eq('id', 'global_config').maybeSingle();
+        if (error) {
+          console.error("Settings load issue:", error);
+          if (error.message.includes("policy") || error.status === 401) {
+            alert("Supabase Database RLS is active! Please turn off RLS in your Supabase SQL Editor.");
+          }
         }
+        settings = data;
+      } catch (e) {
+        console.error("Settings query crashed:", e);
+      }
 
-        if (!user) {
-          document.getElementById('user-display-name').textContent = "Connecting...";
-          document.getElementById('user-tg-id').textContent = `ID: ${CURRENT_USER_ID}`;
-          return;
-        }
+      // Settings fallbacks
+      if (!settings) {
+        settings = {
+          maintenance_mode: false,
+          announcement: "Connecting to database...",
+          min_withdraw: 100,
+          max_withdraw: 10000,
+          withdraw_fee: 5,
+          daily_withdraw_limit: 1,
+          referral_l1: 5,
+          referral_l2: 5,
+          referral_l3: 2,
+          wheel_probabilities: {
+            "0.00": 40, "0.50": 25, "1.00": 15, "1.50": 10, "2.00": 6, "3.00": 3.2, "5.00": 0.7, "20.00": 0.1, "50.00": 0
+          }
+        };
+      }
 
-        // Maintenance Overlay
+      if (!user) {
+        document.getElementById('user-display-name').textContent = "Registering...";
+        document.getElementById('user-tg-id').textContent = `ID: ${CURRENT_USER_ID}`;
+        return; 
+      }
+
+      // 3. Populate Basic UI Elements (Guaranteed to render regardless of table issues!)
+      try {
+        // Maintenance state
         const maintScreen = document.getElementById('maintenance-screen');
         if (settings.maintenance_mode) {
           maintScreen.classList.remove('hidden');
@@ -580,7 +603,7 @@
           maintScreen.classList.add('hidden');
         }
 
-        // Banned state check
+        // Banned state
         const banBadge = document.getElementById('banned-badge');
         if (user.is_banned) {
           banBadge.classList.remove('hidden');
@@ -600,7 +623,7 @@
           banner.classList.add('hidden');
         }
 
-        // Set Profile Image and Details dynamically from Telegram SDK context
+        // Fetch & Set profile image safely
         const initialsContainer = document.getElementById('user-avatar-initials');
         const imgAvatar = document.getElementById('user-avatar-img');
         const pLargeAvatar = document.getElementById('profile-large-avatar');
@@ -618,16 +641,36 @@
           pLargeAvatar.textContent = (user.full_name.substring(0, 2)).toUpperCase();
         }
 
-        // Dynamic Header User info
+        // Header User Details
         document.getElementById('user-display-name').textContent = user.full_name;
         document.getElementById('user-tg-id').textContent = `ID: ${user.telegram_id}`;
 
-        // Wallet Balance Updates
+        // Balance widgets
         document.getElementById('balance-val').textContent = Number(user.balance).toFixed(2);
         document.getElementById('pending-balance-val').textContent = '৳ ' + Number(user.pending_balance).toFixed(2);
         document.getElementById('total-earned-val').textContent = '৳ ' + Number(user.total_earned).toFixed(2);
 
-        // Statistics grid sync from real DB states
+        // Fixed referral link directly mapping to your bot: @shtaskhub_bot (Guaranteed to populate!)
+        document.getElementById('ref-link-field').value = `https://t.me/shtaskhub_bot/App?startapp=${user.telegram_id}`;
+
+        // Withdraw parameters
+        document.getElementById('withdraw-limits-helper').textContent = `Min: ${settings.min_withdraw} | Max: ${settings.max_withdraw}`;
+        document.getElementById('withdraw-fee-badge').textContent = `${settings.withdraw_fee}%`;
+
+        // Profile fields
+        document.getElementById('profile-username').textContent = user.full_name;
+        document.getElementById('profile-tg-display').textContent = `Username: @${user.username || 'unknown'}`;
+        document.getElementById('profile-stat-ref-earns').textContent = Number(user.referral_income).toFixed(2) + ' BDT';
+        document.getElementById('profile-account-status').textContent = user.is_banned ? 'Banned' : 'Verified Profile';
+
+      } catch (e) {
+        console.error("Basic UI elements rendering error:", e);
+      }
+
+      // 4. Isolated Sub-table Async Queries (Failures on any of these won't block the rest of the app!)
+      
+      // Load Stats & Submissions count
+      try {
         const { data: subs } = await _supabase.from('submissions').select('status').eq('user_id', CURRENT_USER_ID);
         const completedCount = subs ? subs.filter(s => s.status === 'approved').length : 0;
         const pendingCount = subs ? subs.filter(s => s.status === 'pending').length : 0;
@@ -637,36 +680,45 @@
         document.getElementById('stat-earned').textContent = '৳ ' + Number(user.total_earned).toFixed(2);
         document.getElementById('stat-pending-tasks').textContent = pendingCount;
         document.getElementById('stat-referral').textContent = Number(user.referral_income || 0).toFixed(2);
+        document.getElementById('profile-stat-sub').textContent = completedCount;
+      } catch (e) {
+        console.error("Error populating submission stats:", e);
+      }
 
-        // Invitation link direct routing fix to @shtaskhub_bot
-        document.getElementById('ref-link-field').value = `https://t.me/shtaskhub_bot/App?startapp=${user.telegram_id}`;
-        
+      // Load Referral Tree Counts
+      try {
         const referralTreeCounts = await calculateReferralCounts(CURRENT_USER_ID);
         document.getElementById('ref-total-count').textContent = referralTreeCounts.total;
         document.getElementById('ref-l1-count').textContent = referralTreeCounts.l1;
         document.getElementById('ref-l2-count').textContent = referralTreeCounts.l2;
         document.getElementById('ref-l3-count').textContent = referralTreeCounts.l3;
-
-        // Profile updates
-        document.getElementById('profile-username').textContent = user.full_name;
-        document.getElementById('profile-tg-display').textContent = `Username: @${user.username || 'unknown'}`;
-        document.getElementById('profile-stat-sub').textContent = completedCount;
-        document.getElementById('profile-stat-ref-earns').textContent = Number(user.referral_income).toFixed(2) + ' BDT';
-        document.getElementById('profile-account-status').textContent = user.is_banned ? 'Banned' : 'Verified Profile';
-
-        // Withdraw Panel limits mapping
-        document.getElementById('withdraw-limits-helper').textContent = `Min: ${settings.min_withdraw} | Max: ${settings.max_withdraw}`;
-        document.getElementById('withdraw-fee-badge').textContent = `${settings.withdraw_fee}%`;
-
-        // Load content collections dynamically from Supabase
-        await populateTasksFeed();
-        await populateWithdrawalLedger();
-        await populateNotificationsStack();
-        syncLuckySpinTimer(user);
-
-      } catch (err) {
-        console.error("Dashboard sync error", err);
+      } catch (e) {
+        console.error("Error populating referral tree counts:", e);
       }
+
+      // Load Tasks Feed
+      try {
+        await populateTasksFeed();
+      } catch (e) {
+        console.error("Error populating tasks feed:", e);
+      }
+
+      // Load Withdrawals Ledger
+      try {
+        await populateWithdrawalLedger();
+      } catch (e) {
+        console.error("Error populating withdrawal list:", e);
+      }
+
+      // Load Notifications
+      try {
+        await populateNotificationsStack();
+      } catch (e) {
+        console.error("Error populating notifications stack:", e);
+      }
+
+      // Spin timer sync
+      syncLuckySpinTimer(user);
     }
 
     async function calculateReferralCounts(userId) {
