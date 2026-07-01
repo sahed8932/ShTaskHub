@@ -58,6 +58,25 @@
     </div>
   </div>
 
+  <!-- Telegram Join Notice Popup Modal -->
+  <div id="telegram-join-modal" class="fixed inset-0 z-50 bg-[#0b0f19]/90 backdrop-blur-md flex items-center justify-center p-6 hidden">
+    <div class="glass-card rounded-2xl p-6 text-center max-w-sm w-full space-y-4 border border-blue-500/20">
+      <div class="w-16 h-16 bg-blue-500/10 text-blue-400 rounded-full flex items-center justify-center text-3xl mx-auto animate-pulse">
+        <i class="fa-brands fa-telegram"></i>
+      </div>
+      <h3 class="text-base font-extrabold text-white">Join Official Channel</h3>
+      <p class="text-xs text-gray-300 leading-relaxed" id="tg-popup-text">Please join our official Telegram channel to get the latest updates and task notifications!</p>
+      <div class="flex items-center gap-3 pt-2">
+        <button onclick="closeTelegramPopup()" class="flex-1 bg-white/5 hover:bg-white/10 text-gray-300 font-bold py-3 rounded-xl text-xs transition">
+          Later
+        </button>
+        <a id="tg-popup-join-btn" href="https://t.me/taskhubbdt_official" target="_blank" onclick="closeTelegramPopup()" class="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 text-white font-bold py-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-lg">
+          <i class="fa-brands fa-telegram text-sm"></i> Join Now
+        </a>
+      </div>
+    </div>
+  </div>
+
   <!-- Announcement Bar -->
   <div id="announcement-banner" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-4 text-xs font-semibold text-center flex items-center justify-between hidden">
     <span class="flex-1 text-center" id="announcement-text">Welcome to TaskHub! Complete tasks to earn BDT.</span>
@@ -247,10 +266,12 @@
               <span class="text-gray-400">Level 2 Network</span>
               <span class="font-bold text-white" id="ref-l2-count">0</span>
             </div>
-            <div class="flex justify-between py-2">
+            <div class="flex justify-between py-2 border-white/5">
               <span class="text-gray-400">Level 3 Network</span>
               <span class="font-bold text-white" id="ref-l3-count">0</span>
             </div>
+            <!-- Prevent hidden crash due to reference on non-existent stat element -->
+            <div class="hidden" id="stat-referral">0.00</div>
           </div>
         </div>
       </section>
@@ -337,9 +358,15 @@
             <span class="text-gray-400">Referral Earnings</span>
             <span class="font-bold text-emerald-400" id="profile-stat-ref-earns">0.00 BDT</span>
           </div>
-          <div class="flex justify-between items-center py-2.5 text-xs">
+          <div class="flex justify-between items-center py-2.5 border-b border-white/5 text-xs">
             <span class="text-gray-400">Account Status</span>
             <span class="font-bold text-green-400" id="profile-account-status">Active</span>
+          </div>
+          <div class="flex justify-between items-center py-2.5 text-xs">
+            <span class="text-gray-400">Customer Support</span>
+            <a href="https://t.me/customerservise24" id="profile-support-link" target="_blank" class="font-bold text-blue-400 flex items-center gap-1 hover:underline">
+              <i class="fa-brands fa-telegram text-sm"></i> Contact Support
+            </a>
           </div>
         </div>
       </section>
@@ -568,7 +595,7 @@
         console.error("Settings query crashed:", e);
       }
 
-      // Settings fallbacks
+      // Settings fallbacks (Including dynamic variables for Admin Panel control)
       if (!settings) {
         settings = {
           maintenance_mode: false,
@@ -580,6 +607,10 @@
           referral_l1: 5,
           referral_l2: 5,
           referral_l3: 2,
+          tg_channel_link: "https://t.me/taskhubbdt_official",
+          customer_support_link: "https://t.me/customerservise24",
+          channel_popup_enabled: true,
+          channel_popup_text: "Please join our official Telegram channel to get the latest updates and task notifications!",
           wheel_probabilities: {
             "0.00": 40, "0.50": 25, "1.00": 15, "1.50": 10, "2.00": 6, "3.00": 3.2, "5.00": 0.7, "20.00": 0.1, "50.00": 0
           }
@@ -657,11 +688,32 @@
         document.getElementById('withdraw-limits-helper').textContent = `Min: ${settings.min_withdraw} | Max: ${settings.max_withdraw}`;
         document.getElementById('withdraw-fee-badge').textContent = `${settings.withdraw_fee}%`;
 
-        // Profile fields
+        // Profile fields & Support integration
         document.getElementById('profile-username').textContent = user.full_name;
         document.getElementById('profile-tg-display').textContent = `Username: @${user.username || 'unknown'}`;
         document.getElementById('profile-stat-ref-earns').textContent = Number(user.referral_income).toFixed(2) + ' BDT';
         document.getElementById('profile-account-status').textContent = user.is_banned ? 'Banned' : 'Verified Profile';
+
+        // Load Dynamic Official Channel Notice & Support Links
+        const currentTgLink = settings.tg_channel_link || "https://t.me/taskhubbdt_official";
+        const currentSupportLink = settings.customer_support_link || "https://t.me/customerservise24";
+        const currentPopupText = settings.channel_popup_text || "Please join our official Telegram channel to get the latest updates and task notifications!";
+        const isPopupEnabled = settings.channel_popup_enabled !== false;
+
+        const profileSupportBtn = document.getElementById('profile-support-link');
+        if (profileSupportBtn) profileSupportBtn.href = currentSupportLink;
+
+        const tgPopupTextElem = document.getElementById('tg-popup-text');
+        if (tgPopupTextElem) tgPopupTextElem.textContent = currentPopupText;
+
+        const tgPopupJoinBtn = document.getElementById('tg-popup-join-btn');
+        if (tgPopupJoinBtn) tgPopupJoinBtn.href = currentTgLink;
+
+        // Show official channel notice on open (once per active session)
+        if (isPopupEnabled && !sessionStorage.getItem('tg_popup_shown')) {
+          const popupModal = document.getElementById('telegram-join-modal');
+          if (popupModal) popupModal.classList.remove('hidden');
+        }
 
       } catch (e) {
         console.error("Basic UI elements rendering error:", e);
@@ -679,7 +731,10 @@
         document.getElementById('stat-pending').textContent = '৳ ' + Number(user.pending_balance).toFixed(2);
         document.getElementById('stat-earned').textContent = '৳ ' + Number(user.total_earned).toFixed(2);
         document.getElementById('stat-pending-tasks').textContent = pendingCount;
-        document.getElementById('stat-referral').textContent = Number(user.referral_income || 0).toFixed(2);
+        
+        const statRefElem = document.getElementById('stat-referral');
+        if (statRefElem) statRefElem.textContent = Number(user.referral_income || 0).toFixed(2);
+        
         document.getElementById('profile-stat-sub').textContent = completedCount;
       } catch (e) {
         console.error("Error populating submission stats:", e);
@@ -719,6 +774,12 @@
 
       // Spin timer sync
       syncLuckySpinTimer(user);
+    }
+
+    function closeTelegramPopup() {
+      const popupModal = document.getElementById('telegram-join-modal');
+      if (popupModal) popupModal.classList.add('hidden');
+      sessionStorage.setItem('tg_popup_shown', 'true');
     }
 
     async function calculateReferralCounts(userId) {
